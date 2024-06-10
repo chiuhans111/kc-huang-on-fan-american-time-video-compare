@@ -1,9 +1,12 @@
 <template>
-  <div>
-    <div>目前 Master 影片為：{{ master }}</div>
+  <div style="max-width:1920px; margin:auto">
+    <div>
+      <h1>影片剪輯段落視覺化比較工具</h1>
+      <p>只有 Master 影片可以用來拉時間軸，目前 Master 影片為：{{ master }}</p>
+    </div>
     <div class="row">
       <div>
-        <h3>1</h3>
+        <h3 :class="{ highlight: master == 1 }">1</h3>
         <button @click="master = 1">Set Master</button>
         <YTPlayer
           videoId="yfwXL_sJTlI"
@@ -13,7 +16,7 @@
         <SRTView :srt="srt1" :time="t1"></SRTView>
       </div>
       <div>
-        <h3>2</h3>
+        <h3 :class="{ highlight: master == 2 }">2</h3>
         <button @click="master = 2">Set Master</button>
         <YTPlayer
           videoId="ymR6Ed5f2aQ"
@@ -24,7 +27,27 @@
       </div>
     </div>
     <div>
-      <canvas width="800" height="200" ref="timeline"></canvas>
+      <h3>Timeline: (top:2, bottom:1)</h3>
+      <p>
+        2= {{ Math.floor(t2 / 60 / 60) }}:{{ Math.floor(t2 / 60) % 60 }}:{{
+          Math.floor(t2 % 60)
+        }}
+      </p>
+      <canvas width="800" height="125" ref="timeline"></canvas>
+      <p>
+        1= {{ Math.floor(t1 / 60 / 60) }}:{{ Math.floor(t1 / 60) % 60 }}:{{
+          Math.floor(t1 % 60)
+        }}
+      </p>
+    </div>
+    <div>
+      <p>
+        GitHub Repository:
+        <a
+          href="https://github.com/chiuhans111/kc-huang-on-fan-american-time-video-compare"
+          >https://github.com/chiuhans111/kc-huang-on-fan-american-time-video-compare</a
+        >
+      </p>
     </div>
   </div>
 </template>
@@ -103,6 +126,7 @@ export default {
       };
     },
     update() {
+      if (!this.alive) return;
       var players = this.getPlayers(1);
       this.t1 = players[0].player.getCurrentTime();
       this.t2 = players[1].player.getCurrentTime();
@@ -143,10 +167,9 @@ export default {
         players[1].player.stopVideo();
       }
 
-      if (this.alive)
-        setTimeout(() => {
-          this.update();
-        }, 500);
+      setTimeout(() => {
+        this.update();
+      }, 500);
     },
   },
   beforeUnmount() {
@@ -180,10 +203,14 @@ html {
     width: 50%;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 900px) {
     div {
       width: 100%;
     }
   }
+}
+
+.highlight{
+  color: red;
 }
 </style>
